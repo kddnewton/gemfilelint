@@ -65,6 +65,7 @@ module Gemlint
       @remote_checker = SpellChecker.new(['https://rubygems.org/'])
     end
 
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def lint(path, logger: nil)
       logger ||= make_logger
 
@@ -89,13 +90,14 @@ module Gemlint
 
       1
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     private
 
     def make_logger
       Logger.new(STDOUT).tap do |logger|
         logger.level = :info
-        logger.formatter = -> (*, message) { message }
+        logger.formatter = ->(*, message) { message }
       end
     end
 
@@ -107,7 +109,7 @@ module Gemlint
       source_list = dsl.instance_variable_get(:@sources)
       rubygems = source_list.instance_variable_get(:@rubygems_aggregate)
 
-      dsl.dependencies.each_with_object([]) do |dependency, offenses|
+      dsl.dependencies.each do |dependency|
         yield dependency_offense_for(dependency.name)
       end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'tempfile'
 
@@ -19,42 +21,37 @@ class GemlintTest < Minitest::Test
   end
 
   def test_violations
-    content = <<~GEMFILE
+    assert_offenses(4, <<~GEMFILE)
       source 'https://rubgems.org'
 
       gem 'rail'
       gem 'rack-atack'
       gem 'rspc'
     GEMFILE
-
-    logger = OffenseLogger.new
-
-    with_gemfile(content) do |path|
-      assert_equal 1, Gemlint.lint(path, logger: logger)
-    end
-
-    assert_equal 4, logger.offenses
   end
 
   def test_clean
-    content = <<~GEMFILE
+    assert_offenses(0, <<~GEMFILE)
       source 'https://rubygems.org'
 
       gem 'rails'
       gem 'rack-attack'
       gem 'rspec'
     GEMFILE
-
-    logger = OffenseLogger.new
-
-    with_gemfile(content) do |path|
-      assert_equal 0, Gemlint.lint(path, logger: logger)
-    end
-
-    assert_equal 0, logger.offenses
   end
 
   private
+
+  def assert_offenses(offenses, content)
+    logger = OffenseLogger.new
+
+    with_gemfile(content) do |path|
+      exit_code = offenses.positive? ? 1 : 0
+      assert_equal exit_code, Gemlint.lint(path, logger: logger)
+    end
+
+    assert_equal offenses, logger.offenses
+  end
 
   def with_gemfile(content)
     file = Tempfile.new(['Gemfile-', '.gemfile'])

@@ -1,0 +1,12 @@
+AllCops:
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+  TargetRubyVersion: 2.7
+  Exclude:
+  - 'vendor/**/*'
+
+Style/Documentation:
+  Enabled: false
+
+Style/StructInheritance:
+  Enabled: false
