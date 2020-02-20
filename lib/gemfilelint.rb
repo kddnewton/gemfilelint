@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'delegate'
 require 'logger'
 
 require 'bundler'
@@ -8,8 +9,23 @@ require 'bundler/similarity_detector'
 require 'gemfilelint/version'
 
 module Gemfilelint
+  class SpellChecker
+    attr_reader :detector, :haystack
+
+    def initialize(haystack)
+      @detector = Bundler::SimilarityDetector.new(haystack)
+      @haystack = haystack
+    end
+
+    def correct(needle)
+      return [] if haystack.include?(needle)
+
+      detector.similar_words(needle)
+    end
+  end
+
   module Offenses
-    class Dependency < Struct.new(:name, :suggestions)
+    class Dependency < Struct.new(:path, :name, :suggestions)
       def to_s
         <<~ERR
           Gem \"#{name}\" is possibly misspelled, suggestions:
@@ -18,7 +34,13 @@ module Gemfilelint
       end
     end
 
-    class Remote < Struct.new(:name, :suggestions)
+    class InvalidGemfile < Struct.new(:path)
+      def to_s
+        "Gemfile at \"#{path}\" is invalid."
+      end
+    end
+
+    class Remote < Struct.new(:path, :name, :suggestions)
       def to_s
         <<~ERR
           Source \"#{name}\" is possibly misspelled, suggestions:
@@ -28,24 +50,64 @@ module Gemfilelint
     end
   end
 
-  class Linter
-    class SpellChecker
-      attr_reader :detector, :haystack
+  module Parser
+    class Valid < Struct.new(:path, :dsl)
+      def each_offense
+        dependencies.each do |dependency|
+          yield dependency_offense_for(dependency)
+        end
 
-      def initialize(haystack)
-        @detector = Bundler::SimilarityDetector.new(haystack)
-        @haystack = haystack
+        remotes.each do |remote|
+          yield remote_offense_for(remote)
+        end
       end
 
-      def correct(needle)
-        return [] if haystack.include?(needle)
+      private
 
-        detector.similar_words(needle)
+      def dependencies
+        dsl.dependencies.map(&:name)
+      end
+
+      def dependency_offense_for(name)
+        corrections = Gemfilelint.dependencies.correct(name)
+        return if corrections.empty?
+
+        Offenses::Dependency.new(path, name, corrections.first(5))
+      end
+
+      # Lol wut, there has got to be a better way to do this
+      def remotes
+        dsl
+          .instance_variable_get(:@sources)
+          .instance_variable_get(:@rubygems_aggregate)
+          .remotes
+          .map(&:to_s)
+      end
+
+      def remote_offense_for(uri)
+        corrections = Gemfilelint.remotes.correct(uri)
+        return if corrections.empty?
+
+        Offenses::Remote.new(path, uri, corrections)
       end
     end
 
+    class Invalid < Struct.new(:path)
+      def each_offense
+        yield Offenses::InvalidGemfile.new(path)
+      end
+    end
+
+    def self.for(path)
+      Valid.new(path, Bundler::Dsl.new.tap { |dsl| dsl.eval_gemfile(path) })
+    rescue Bundler::Dsl::DSLError
+      Invalid.new(path)
+    end
+  end
+
+  class Linter
     module ANSIColor
-      CODES = { green: 32, magenta: 35 }.freeze
+      CODES = { green: 32, magenta: 35, cyan: 36 }.freeze
 
       refine String do
         def colorize(code)
@@ -56,84 +118,75 @@ module Gemfilelint
 
     using ANSIColor
 
-    attr_reader :dependency_checker, :remote_checker, :logger
+    attr_reader :logger
 
-    def initialize
-      common_gems = File.read(File.expand_path('gems.txt', __dir__)).split("\n")
-
-      @dependency_checker = SpellChecker.new(common_gems)
-      @remote_checker = SpellChecker.new(['https://rubygems.org/'])
+    def initialize(logger: nil)
+      @logger = logger || make_logger
     end
 
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-    def lint(*paths, logger: nil)
-      logger ||= make_logger
+    def lint(*paths)
+      logger.info("Inspecting gemfiles at #{paths.join(', ')}\n")
+
       offenses = []
 
-      paths.each do |path|
-        logger.info("Inspecting gemfile at #{path}\n")
-
-        each_offense_for(path) do |offense|
-          if offense
-            offenses << offense
-            logger.info('W'.colorize(:magenta))
-          else
-            logger.info('.'.colorize(:green))
-          end
+      each_offense_for(paths) do |offense|
+        if offense
+          offenses << offense
+          logger.info('W'.colorize(:magenta))
+        else
+          logger.info('.'.colorize(:green))
         end
-
-        logger.info("\n")
       end
 
+      logger.info("\n")
+
       if offenses.empty?
-        0
+        true
       else
-        prefix = 'W'.colorize(:magenta)
-        messages = offenses.map { |offense| "#{prefix}: #{offense}\n" }
-        logger.info("\nOffenses:\n\n#{messages.join}\n")
-        1
+        messages = offenses.map { |offense| offense_to_message(offense) }
+        logger.info("\nOffenses:\n\n#{messages.join("\n")}\n")
+        false
       end
     end
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     private
 
+    def each_offense_for(paths)
+      paths.each do |path|
+        Parser.for(path).each_offense do |offense|
+          yield offense
+        end
+      end
+    end
+
     def make_logger
-      Logger.new(STDOUT).tap do |logger|
-        logger.level = :info
-        logger.formatter = ->(*, message) { message }
+      Logger.new(STDOUT).tap do |creating|
+        creating.level = :info
+        creating.formatter = ->(*, message) { message }
       end
     end
 
-    def each_offense_for(path)
-      dsl = Bundler::Dsl.new
-      dsl.eval_gemfile(path)
-
-      # Lol wut, there has got to be a better way to do this
-      source_list = dsl.instance_variable_get(:@sources)
-      rubygems = source_list.instance_variable_get(:@rubygems_aggregate)
-
-      dsl.dependencies.each do |dependency|
-        yield dependency_offense_for(dependency.name)
-      end
-
-      rubygems.remotes.each do |remote|
-        yield remote_offense_for(remote.to_s)
-      end
-    end
-
-    def dependency_offense_for(name)
-      corrections = dependency_checker.correct(name)
-      Offenses::Dependency.new(name, corrections.first(5)) if corrections.any?
-    end
-
-    def remote_offense_for(uri)
-      corrections = remote_checker.correct(uri)
-      Offenses::Remote.new(uri, corrections) if corrections.any?
+    def offense_to_message(offense)
+      "#{offense.path.colorize(:cyan)}: #{'W'.colorize(:magenta)}: #{offense}"
     end
   end
 
-  def self.lint(*paths, logger: nil)
-    Linter.new.lint(*paths, logger: logger)
+  class << self
+    def dependencies
+      @dependencies ||=
+        SpellChecker.new(
+          File.read(File.expand_path('gems.txt', __dir__)).split("\n")
+        )
+    end
+
+    def remotes
+      @remotes ||= SpellChecker.new(['https://rubygems.org/'])
+    end
+
+    def lint(*paths, logger: nil)
+      Linter.new(logger: logger).lint(*paths)
+    end
   end
 end

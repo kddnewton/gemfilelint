@@ -45,7 +45,7 @@ class GemfilelintTest < Minitest::Test
 
     with_gemfile("gem 'rail'") do |path1|
       with_gemfile("gem 'rspc'") do |path2|
-        assert_equal 1, Gemfilelint.lint(path1, path2, logger: logger)
+        refute Gemfilelint.lint(path1, path2, logger: logger)
       end
     end
 
@@ -58,8 +58,7 @@ class GemfilelintTest < Minitest::Test
     logger = OffenseLogger.new
 
     with_gemfile(content) do |path|
-      exit_code = offenses.positive? ? 1 : 0
-      assert_equal exit_code, Gemfilelint.lint(path, logger: logger)
+      assert_equal !offenses.positive?, Gemfilelint.lint(path, logger: logger)
     end
 
     assert_equal offenses, logger.offenses

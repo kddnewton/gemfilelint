@@ -4,4 +4,12 @@
 $LOAD_PATH.unshift(File.expand_path(File.join('..', 'lib'), __dir__))
 require 'gemfilelint'
 
-exit Gemfilelint.lint(ARGV[0] || 'Gemfile')
+gemfiles = ARGV.any? ? ARGV : './Gemfile'
+
+invalid = gemfiles.reject { |gemfile| File.file?(gemfile) }
+if invalid.any?
+  warn("Could not find a gemfile at: #{invalid.join(', ')}")
+  exit 2
+end
+
+exit Gemfilelint.lint(*gemfiles) ? 0 : 1
