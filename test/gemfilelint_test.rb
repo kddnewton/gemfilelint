@@ -40,6 +40,18 @@ class GemfilelintTest < Minitest::Test
     GEMFILE
   end
 
+  def test_multiple
+    logger = OffenseLogger.new
+
+    with_gemfile("gem 'rail'") do |path1|
+      with_gemfile("gem 'rspc'") do |path2|
+        assert_equal 1, Gemfilelint.lint(path1, path2, logger: logger)
+      end
+    end
+
+    assert_equal 2, logger.offenses
+  end
+
   private
 
   def assert_offenses(offenses, content)

@@ -66,29 +66,33 @@ module Gemfilelint
     end
 
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-    def lint(path, logger: nil)
+    def lint(*paths, logger: nil)
       logger ||= make_logger
-
-      logger.info("Inspecting gemfile at #{path}\n")
       offenses = []
 
-      each_offense_for(path) do |offense|
-        if offense
-          offenses << offense
-          logger.info('W'.colorize(:magenta))
-        else
-          logger.info('.'.colorize(:green))
+      paths.each do |path|
+        logger.info("Inspecting gemfile at #{path}\n")
+
+        each_offense_for(path) do |offense|
+          if offense
+            offenses << offense
+            logger.info('W'.colorize(:magenta))
+          else
+            logger.info('.'.colorize(:green))
+          end
         end
+
+        logger.info("\n")
       end
 
-      logger.info("\n")
-      return 0 if offenses.empty?
-
-      prefix = 'W'.colorize(:magenta)
-      messages = offenses.map { |offense| "#{prefix}: #{offense}\n" }
-      logger.info("\nOffenses:\n\n#{messages.join}\n")
-
-      1
+      if offenses.empty?
+        0
+      else
+        prefix = 'W'.colorize(:magenta)
+        messages = offenses.map { |offense| "#{prefix}: #{offense}\n" }
+        logger.info("\nOffenses:\n\n#{messages.join}\n")
+        1
+      end
     end
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
@@ -129,7 +133,7 @@ module Gemfilelint
     end
   end
 
-  def self.lint(path, logger: nil)
-    Linter.new.lint(path, logger: logger)
+  def self.lint(*paths, logger: nil)
+    Linter.new.lint(*paths, logger: logger)
   end
 end
