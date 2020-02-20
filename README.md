@@ -1,5 +1,8 @@
 # Gemfile lint
 
+[![Build Status](https://github.com/kddeisz/gemfilelint/workflows/Main/badge.svg)](https://github.com/kddeisz/gemfilelint/actions)
+[![Gem Version](https://img.shields.io/gem/v/gemfilelint.svg)](https://github.com/kddeisz/gemfilelint)
+
 Lint your Gemfile! This will find common spelling mistakes in gems and remote sources so that you don't accidentally download code from places that you don't mean to.
 
 ## Installation
