@@ -15,8 +15,8 @@ PLATFORMS
 
 DEPENDENCIES
   gemlint!
-  minitest (~> 5.0)
-  rake (~> 12.0)
+  minitest
+  rake
 
 BUNDLED WITH
    2.1.2

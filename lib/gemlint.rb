@@ -65,7 +65,9 @@ module Gemlint
       @remote_checker = SpellChecker.new(['https://rubygems.org/'])
     end
 
-    def lint(path, logger = make_logger)
+    def lint(path, logger: nil)
+      logger ||= make_logger
+
       logger.info("Inspecting gemfile at #{path}\n")
       offenses = []
 
@@ -125,7 +127,7 @@ module Gemlint
     end
   end
 
-  def self.lint(path)
-    Linter.new.lint(path)
+  def self.lint(path, logger: nil)
+    Linter.new.lint(path, logger: logger)
   end
 end
