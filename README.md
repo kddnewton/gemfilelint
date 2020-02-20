@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-Run the `gemfilelint` executable either in the root of your repository that contains a Gemfile or specify a path to one.
+Run the `gemfilelint` executable either in the root of your repository that contains a Gemfile or specify a path to one or more Gemfile paths.
 
 ## Development
 
