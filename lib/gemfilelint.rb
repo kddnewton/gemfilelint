@@ -5,9 +5,9 @@ require 'logger'
 require 'bundler'
 require 'bundler/similarity_detector'
 
-require 'gemlint/version'
+require 'gemfilelint/version'
 
-module Gemlint
+module Gemfilelint
   module Offenses
     class Dependency < Struct.new(:name, :suggestions)
       def to_s

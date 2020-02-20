@@ -3,7 +3,7 @@
 require 'test_helper'
 require 'tempfile'
 
-class GemlintTest < Minitest::Test
+class GemfilelintTest < Minitest::Test
   class OffenseLogger
     attr_reader :offenses
 
@@ -17,7 +17,7 @@ class GemlintTest < Minitest::Test
   end
 
   def test_version
-    refute_nil ::Gemlint::VERSION
+    refute_nil ::Gemfilelint::VERSION
   end
 
   def test_violations
@@ -47,7 +47,7 @@ class GemlintTest < Minitest::Test
 
     with_gemfile(content) do |path|
       exit_code = offenses.positive? ? 1 : 0
-      assert_equal exit_code, Gemlint.lint(path, logger: logger)
+      assert_equal exit_code, Gemfilelint.lint(path, logger: logger)
     end
 
     assert_equal offenses, logger.offenses

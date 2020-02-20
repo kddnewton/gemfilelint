@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require 'gemlint'
+require 'gemfilelint'
 
 require 'irb'
 IRB.start(__FILE__)

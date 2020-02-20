@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require_relative 'lib/gemlint/version'
+require_relative 'lib/gemfilelint/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'gemlint'
-  spec.version       = Gemlint::VERSION
+  spec.name          = 'gemfilelint'
+  spec.version       = Gemfilelint::VERSION
   spec.authors       = ['Kevin Deisz']
   spec.email         = ['kevin.deisz@gmail.com']
 
   spec.summary       = 'Lint your Gemfile!'
-  spec.homepage      = 'https://github.com/kddeisz/gemlint'
+  spec.homepage      = 'https://github.com/kddeisz/gemfilelint'
   spec.license       = 'MIT'
 
   spec.files         = Dir.chdir(__dir__) do

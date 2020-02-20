@@ -2,6 +2,6 @@
 # frozen_string_literal: true
 
 $LOAD_PATH.unshift(File.expand_path(File.join('..', 'lib'), __dir__))
-require 'gemlint'
+require 'gemfilelint'
 
-exit Gemlint.lint(ARGV[0] || 'Gemfile')
+exit Gemfilelint.lint(ARGV[0] || 'Gemfile')
