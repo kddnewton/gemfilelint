@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    gemfilelint (0.1.0)
+    gemfilelint (0.2.0)
       bundler
 
 GEM
