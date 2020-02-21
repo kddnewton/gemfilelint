@@ -3,7 +3,19 @@
 [![Build Status](https://github.com/kddeisz/gemfilelint/workflows/Main/badge.svg)](https://github.com/kddeisz/gemfilelint/actions)
 [![Gem Version](https://img.shields.io/gem/v/gemfilelint.svg)](https://github.com/kddeisz/gemfilelint)
 
-Lint your Gemfile! This will find common spelling mistakes in gems and remote sources so that you don't accidentally download code from places that you don't mean to.
+Lint your Gemfile! This will find common spelling mistakes in gems and remote sources so that you don't accidentally download code from places that you don't mean to. For example, if you have a Gemfile with the contents:
+
+```ruby
+source 'https://rubyems.org'
+
+gem 'rails'
+gem 'puma'
+gem 'pg'
+```
+
+You might not be able to see the immediate issue, but there's a typo in your source declaration. While this will generally be harmless, as it will likely error, it's also possible that someone could register that domain and provide gems with modified content to execute their own code on your production system.
+
+`gemfilelint` is a utility that you can run against your Gemfile that will check all of your listed sources against known trusted sources and all of your listed gems against the most commonly downloaded gems according to rubygems. This can give you some peace of mind that if you make a spelling mistake you won't accidentally open yourself up to RCE without knowing it.
 
 ## Installation
 
