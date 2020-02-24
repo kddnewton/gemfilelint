@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [0.2.1] - 2020-02-24
+
+### Changed
+
+- Fix invocation when not specifying path to gemfile.
+
 ## [0.2.0] - 2020-02-20
 
 ### Added

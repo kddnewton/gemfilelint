@@ -4,7 +4,7 @@
 $LOAD_PATH.unshift(File.expand_path(File.join('..', 'lib'), __dir__))
 require 'gemfilelint'
 
-gemfiles = ARGV.any? ? ARGV : './Gemfile'
+gemfiles = ARGV.any? ? ARGV : %w[./Gemfile]
 
 invalid = gemfiles.reject { |gemfile| File.file?(gemfile) }
 if invalid.any?

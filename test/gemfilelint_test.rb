@@ -52,6 +52,17 @@ class GemfilelintTest < Minitest::Test
     assert_equal 2, logger.offenses
   end
 
+  def test_invocation
+    response = false
+
+    capture_subprocess_io do
+      path = File.join('..', 'exe', 'gemfilelint')
+      response = system(File.expand_path(path, __dir__))
+    end
+
+    assert response
+  end
+
   private
 
   def assert_offenses(offenses, content)
