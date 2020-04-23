@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    gemfilelint (0.2.1)
+    gemfilelint (0.2.2)
       bundler
 
 GEM
@@ -37,4 +37,4 @@ DEPENDENCIES
   rubocop
 
 BUNDLED WITH
-   2.1.2
+   2.1.4
