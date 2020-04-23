@@ -20,7 +20,7 @@ module Gemfilelint
     def correct(needle)
       return [] if haystack.include?(needle)
 
-      detector.similar_words(needle)
+      detector.similar_words(needle, 2)
     end
   end
 

@@ -35,7 +35,17 @@ Or install it yourself as:
 
 ## Usage
 
-Run the `gemfilelint` executable either in the root of your repository that contains a Gemfile or specify a path to one or more Gemfile paths.
+Run the `gemfilelint` executable either in the root of your repository:
+
+```
+$ bundle exec gemfilelint
+```
+
+Or run the executable pointing to any number of gemfiles:
+
+```
+$ bundle exec gemfilelint gemfiles/*.gemfile
+```
 
 ## Development
 
