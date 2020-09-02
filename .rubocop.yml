@@ -5,6 +5,9 @@ AllCops:
   Exclude:
   - 'vendor/**/*'
 
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
