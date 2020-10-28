@@ -11,5 +11,8 @@ Gemspec/RequiredRubyVersion:
 Style/Documentation:
   Enabled: false
 
+Style/ExplicitBlockArgument:
+  Enabled: false
+
 Style/StructInheritance:
   Enabled: false
