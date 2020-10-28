@@ -6,17 +6,16 @@ on:
 jobs:
   worker:
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    if: github.event.check_suite.conclusion == "success"
+      # github.actor == "dependabot[bot]" && 
     steps:
       - uses: actions/github-script@v3
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             console.log(JSON.stringify(context, null, 2));
-            if (context.check_suite.conclusion === "success" && context.app.name === "Main") {
-              github.pullRequests.merge({
-                owner: context.payload.repository.owner.login,
-                repo: context.payload.repository.name,
-                pull_number: context.payload.pull_request.number
-              })
-            }
+# github.pullRequests.merge({
+#   owner: context.payload.repository.owner.login,
+#   repo: context.payload.repository.name,
+#   pull_number: context.payload.pull_request.number
+# })
