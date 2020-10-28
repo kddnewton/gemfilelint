@@ -162,7 +162,7 @@ module Gemfilelint
     end
 
     def make_logger
-      Logger.new(STDOUT).tap do |creating|
+      Logger.new($stdout).tap do |creating|
         creating.level = :info
         creating.formatter = ->(*, message) { message }
       end
