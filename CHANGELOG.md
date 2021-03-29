@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [0.3.0] - 2021-03-29
+
+### Changed
+
+- Support the renamed rubygems source instance variable.
+
 ## [0.2.2] - 2020-04-23
 
 ### Changed
@@ -30,7 +36,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - 🎉 Initial release.
 
-[unreleased]: https://github.com/kddeisz/gemfilelint/compare/v0.2.2...HEAD
+[unreleased]: https://github.com/kddeisz/gemfilelint/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/kddeisz/gemfilelint/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/kddeisz/gemfilelint/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/kddeisz/gemfilelint/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/kddeisz/gemfilelint/compare/v0.1.0...v0.2.0

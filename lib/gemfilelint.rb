@@ -77,11 +77,12 @@ module Gemfilelint
 
       # Lol wut, there has got to be a better way to do this
       def remotes
-        dsl
-          .instance_variable_get(:@sources)
-          .instance_variable_get(:@rubygems_aggregate)
-          .remotes
-          .map(&:to_s)
+        sources = dsl.instance_variable_get(:@sources)
+        rubygems =
+          sources.instance_variable_get(:@rubygems_aggregate) ||
+          sources.instance_variable_get(:@global_rubygems_source)
+
+        rubygems.remotes.map(&:to_s)
       end
 
       def remote_offense_for(uri)
