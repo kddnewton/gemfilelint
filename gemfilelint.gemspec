@@ -5,8 +5,8 @@ require_relative 'lib/gemfilelint/version'
 Gem::Specification.new do |spec|
   spec.name          = 'gemfilelint'
   spec.version       = Gemfilelint::VERSION
-  spec.authors       = ['Kevin Deisz']
-  spec.email         = ['kevin.deisz@gmail.com']
+  spec.authors       = ['Kevin Newton']
+  spec.email         = ['kddnewton@gmail.com']
 
   spec.summary       = 'Lint your Gemfile!'
   spec.homepage      = 'https://github.com/kddeisz/gemfilelint'
