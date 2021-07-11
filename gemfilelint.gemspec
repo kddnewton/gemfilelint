@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['kddnewton@gmail.com']
 
   spec.summary       = 'Lint your Gemfile!'
-  spec.homepage      = 'https://github.com/kddeisz/gemfilelint'
+  spec.homepage      = 'https://github.com/kddnewton/gemfilelint'
   spec.license       = 'MIT'
 
   spec.files         = Dir.chdir(__dir__) do
