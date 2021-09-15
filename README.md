@@ -47,6 +47,14 @@ Or run the executable pointing to any number of gemfiles:
 $ bundle exec gemfilelint gemfiles/*.gemfile
 ```
 
+### --ignore
+
+If you're receiving false positives because you're using a gem that is named similarly to a very popular gem, then you can pass the `--ignore` option to the CLI. This should be a comma-delimited list of gem names that should be ignored when linting. For example:
+
+```
+$ bundle exec gemfilelint --ignore rr
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

@@ -1,15 +1,31 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift(File.expand_path(File.join('..', 'lib'), __dir__))
-require 'gemfilelint'
+$LOAD_PATH.unshift(File.expand_path(File.join("..", "lib"), __dir__))
+
+require "gemfilelint"
+require "optparse"
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: gemfilelint [options] [path/to/Gemfile]*"
+
+  opts.on("-i GEMS", "--ignore GEMS", "Ignore a comma-delimited list of false positives") do |ignore|
+    options[:ignore] = ignore.split(",").map(&:strip)
+  end
+
+  opts.on("-h", "--help", "Prints this help") do
+    puts opts
+    exit
+  end
+end.parse!
 
 gemfiles = ARGV.any? ? ARGV : %w[./Gemfile]
-
 invalid = gemfiles.reject { |gemfile| File.file?(gemfile) }
+
 if invalid.any?
   warn("Could not find a gemfile at: #{invalid.join(', ')}")
   exit 2
 end
 
-exit Gemfilelint.lint(*gemfiles) ? 0 : 1
+exit Gemfilelint.lint(*gemfiles, **options) ? 0 : 1

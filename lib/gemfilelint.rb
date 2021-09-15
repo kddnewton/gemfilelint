@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'delegate'
-require 'logger'
+require "delegate"
+require "logger"
 
-require 'bundler'
-require 'bundler/similarity_detector'
+require "bundler"
+require "bundler/similarity_detector"
 
-require 'gemfilelint/version'
+require "gemfilelint/version"
 
 module Gemfilelint
   class SpellChecker
@@ -52,8 +52,10 @@ module Gemfilelint
 
   module Parser
     class Valid < Struct.new(:path, :dsl)
-      def each_offense
+      def each_offense(ignore: [])
         dependencies.each do |dependency|
+          next if ignore.include?(dependency)
+
           yield dependency_offense_for(dependency)
         end
 
@@ -94,7 +96,7 @@ module Gemfilelint
     end
 
     class Invalid < Struct.new(:path)
-      def each_offense
+      def each_offense(**)
         yield Offenses::InvalidGemfile.new(path)
       end
     end
@@ -119,9 +121,10 @@ module Gemfilelint
 
     using ANSIColor
 
-    attr_reader :logger
+    attr_reader :ignore, :logger
 
-    def initialize(logger: nil)
+    def initialize(ignore: [], logger: nil)
+      @ignore = ignore
       @logger = logger || make_logger
     end
 
@@ -134,9 +137,9 @@ module Gemfilelint
       each_offense_for(paths) do |offense|
         if offense
           offenses << offense
-          logger.info('W'.colorize(:magenta))
+          logger.info("W".colorize(:magenta))
         else
-          logger.info('.'.colorize(:green))
+          logger.info(".".colorize(:green))
         end
       end
 
@@ -156,7 +159,7 @@ module Gemfilelint
 
     def each_offense_for(paths)
       paths.each do |path|
-        Parser.for(path).each_offense do |offense|
+        Parser.for(path).each_offense(ignore: ignore) do |offense|
           yield offense
         end
       end
@@ -178,16 +181,16 @@ module Gemfilelint
     def dependencies
       @dependencies ||=
         SpellChecker.new(
-          File.read(File.expand_path('gems.txt', __dir__)).split("\n")
+          File.read(File.expand_path("gems.txt", __dir__)).split("\n")
         )
     end
 
     def remotes
-      @remotes ||= SpellChecker.new(['https://rubygems.org/'])
+      @remotes ||= SpellChecker.new(["https://rubygems.org/"])
     end
 
-    def lint(*paths, logger: nil)
-      Linter.new(logger: logger).lint(*paths)
+    def lint(*paths, ignore: [], logger: nil)
+      Linter.new(ignore: ignore, logger: logger).lint(*paths)
     end
   end
 end

@@ -28,10 +28,11 @@ GEM
     rubocop-ast (1.11.0)
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
-    unicode-display_width (2.0.0)
+    unicode-display_width (2.1.0)
 
 PLATFORMS
-  ruby
+  x86_64-darwin-19
+  x86_64-linux
 
 DEPENDENCIES
   gemfilelint!

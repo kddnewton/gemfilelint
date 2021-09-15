@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'test_helper'
-require 'tempfile'
+require "test_helper"
+require "tempfile"
 
 class GemfilelintTest < Minitest::Test
   class OffenseLogger
@@ -22,29 +22,37 @@ class GemfilelintTest < Minitest::Test
 
   def test_violations
     assert_offenses(4, <<~GEMFILE)
-      source 'https://rubgems.org'
+      source "https://rubgems.org"
 
-      gem 'rail'
-      gem 'rack-atack'
-      gem 'rspc'
+      gem "rail"
+      gem "rack-atack"
+      gem "rspc"
     GEMFILE
   end
 
   def test_clean
     assert_offenses(0, <<~GEMFILE)
-      source 'https://rubygems.org'
+      source "https://rubygems.org"
 
-      gem 'rails'
-      gem 'rack-attack'
-      gem 'rspec'
+      gem "rails"
+      gem "rack-attack"
+      gem "rspec"
+    GEMFILE
+  end
+
+  def test_ignore
+    assert_offenses(0, <<~GEMFILE, ignore: %w[rspc])
+      source "https://rubygems.org"
+
+      gem "rspc"
     GEMFILE
   end
 
   def test_multiple
     logger = OffenseLogger.new
 
-    with_gemfile("gem 'rail'") do |path1|
-      with_gemfile("gem 'rspc'") do |path2|
+    with_gemfile('gem "rail"') do |path1|
+      with_gemfile('gem "rspc"') do |path2|
         refute Gemfilelint.lint(path1, path2, logger: logger)
       end
     end
@@ -55,9 +63,11 @@ class GemfilelintTest < Minitest::Test
   def test_invocation
     response = false
 
-    capture_subprocess_io do
-      path = File.join('..', 'exe', 'gemfilelint')
-      response = system(File.expand_path(path, __dir__))
+    with_gemfile('gem "rail"; gem "rspc"') do |path|
+      capture_subprocess_io do
+        executable = File.expand_path("../exe/gemfilelint", __dir__)
+        response = system("#{executable} --ignore rail,rspc #{path}")
+      end
     end
 
     assert response
@@ -65,18 +75,19 @@ class GemfilelintTest < Minitest::Test
 
   private
 
-  def assert_offenses(offenses, content)
+  def assert_offenses(offenses, content, ignore: [])
     logger = OffenseLogger.new
 
     with_gemfile(content) do |path|
-      assert_equal !offenses.positive?, Gemfilelint.lint(path, logger: logger)
+      result = Gemfilelint.lint(path, ignore: ignore, logger: logger)
+      assert_equal !offenses.positive?, result
     end
 
     assert_equal offenses, logger.offenses
   end
 
   def with_gemfile(content)
-    file = Tempfile.new(['Gemfile-', '.gemfile'])
+    file = Tempfile.new(["Gemfile-", ".gemfile"])
 
     begin
       file.write(content)
