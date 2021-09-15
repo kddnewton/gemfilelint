@@ -6,11 +6,11 @@
 Lint your Gemfile! This will find common spelling mistakes in gems and remote sources so that you don't accidentally download code from places that you don't mean to. For example, if you have a Gemfile with the contents:
 
 ```ruby
-source 'https://rubyems.org'
+source "https://rubyems.org"
 
-gem 'rails'
-gem 'puma'
-gem 'pg'
+gem "rails"
+gem "puma"
+gem "pg"
 ```
 
 You might not be able to see the immediate issue, but there's a typo in your source declaration. While this will generally be harmless, as it will likely error, it's also possible that someone could register that domain and provide gems with modified content to execute their own code on your production system.
@@ -22,7 +22,7 @@ You might not be able to see the immediate issue, but there's a typo in your sou
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'gemfilelint'
+gem "gemfilelint"
 ```
 
 And then execute:
@@ -63,7 +63,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/kddnewton/gemfilelint. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/kddnewton/gemfilelint/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/kddnewton/gemfilelint. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/kddnewton/gemfilelint/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -71,4 +71,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Gemfilelint project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/kddnewton/gemfilelint/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Gemfilelint project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/kddnewton/gemfilelint/blob/main/CODE_OF_CONDUCT.md).
