@@ -2,17 +2,27 @@
 
 require_relative "lib/gemfilelint/version"
 
+version = Gemfilelint::VERSION
+repository = "https://github.com/kddnewton/gemfilelint"
+
 Gem::Specification.new do |spec|
   spec.name          = "gemfilelint"
-  spec.version       = Gemfilelint::VERSION
+  spec.version       = version
   spec.authors       = ["Kevin Newton"]
   spec.email         = ["kddnewton@gmail.com"]
 
   spec.summary       = "Lint your Gemfile!"
-  spec.homepage      = "https://github.com/kddnewton/gemfilelint"
+  spec.homepage      = repository
   spec.license       = "MIT"
 
-  spec.files         = Dir.chdir(__dir__) do
+  spec.metadata = {
+    "bug_tracker_uri" => "#{repository}/issues",
+    "changelog_uri" => "#{repository}/blob/v#{version}/CHANGELOG.md",
+    "source_code_uri" => repository,
+    "rubygems_mfa_required" => "true"
+  }
+
+  spec.files = Dir.chdir(__dir__) do
     `git ls-files -z`.split("\x0").reject do |f|
       f.match(%r{^(test|spec|features)/})
     end
