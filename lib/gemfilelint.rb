@@ -28,7 +28,7 @@ module Gemfilelint
     class Dependency < Struct.new(:path, :name, :suggestions)
       def to_s
         <<~ERR
-          Gem \"#{name}\" is possibly misspelled, suggestions:
+          Gem "#{name}" is possibly misspelled, suggestions:
           #{suggestions.map { |suggestion| "   * #{suggestion}" }.join("\n")}"
         ERR
       end
@@ -43,7 +43,7 @@ module Gemfilelint
     class Remote < Struct.new(:path, :name, :suggestions)
       def to_s
         <<~ERR
-          Source \"#{name}\" is possibly misspelled, suggestions:
+          Source "#{name}" is possibly misspelled, suggestions:
           #{suggestions.map { |suggestion| "   * #{suggestion}" }.join("\n")}
         ERR
       end
