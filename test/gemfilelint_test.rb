@@ -87,7 +87,7 @@ class GemfilelintTest < Minitest::Test
   end
 
   def with_gemfile(content)
-    file = Tempfile.new(["Gemfile-", ".gemfile"])
+    file = Tempfile.new(%w[Gemfile- .gemfile])
 
     begin
       file.write(content)

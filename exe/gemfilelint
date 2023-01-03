@@ -24,7 +24,7 @@ gemfiles = ARGV.any? ? ARGV : %w[./Gemfile]
 invalid = gemfiles.reject { |gemfile| File.file?(gemfile) }
 
 if invalid.any?
-  warn("Could not find a gemfile at: #{invalid.join(', ')}")
+  warn("Could not find a gemfile at: #{invalid.join(", ")}")
   exit 2
 end
 

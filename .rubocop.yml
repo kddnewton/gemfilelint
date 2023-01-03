@@ -1,3 +1,6 @@
+inherit_gem:
+  syntax_tree: config/rubocop.yml
+
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
@@ -8,6 +11,9 @@ AllCops:
   - 'vendor/**/*'
 
 Gemspec/RequiredRubyVersion:
+  Enabled: false
+
+Metrics:
   Enabled: false
 
 Style/Documentation:

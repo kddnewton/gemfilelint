@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
-require "delegate"
 require "logger"
-
 require "bundler"
 require "bundler/similarity_detector"
-
 require "gemfilelint/version"
 
 module Gemfilelint
@@ -53,14 +50,22 @@ module Gemfilelint
   module Parser
     class Valid < Struct.new(:path, :dsl)
       def each_offense(ignore: [])
-        dependencies.each do |dependency|
-          next if ignore.include?(dependency)
+        dependencies.each do |name|
+          next if ignore.include?(name)
 
-          yield dependency_offense_for(dependency)
+          if (corrections = Gemfilelint.dependencies.correct(name)).any?
+            yield Offenses::Dependency.new(path, name, corrections.first(5))
+          else
+            yield nil
+          end
         end
 
-        remotes.each do |remote|
-          yield remote_offense_for(remote)
+        remotes.each do |uri|
+          if (corrections = Gemfilelint.remotes.correct(uri)).any?
+            yield Offenses::Remote.new(path, uri, corrections)
+          else
+            yield nil
+          end
         end
       end
 
@@ -70,28 +75,14 @@ module Gemfilelint
         dsl.dependencies.map(&:name)
       end
 
-      def dependency_offense_for(name)
-        corrections = Gemfilelint.dependencies.correct(name)
-        return if corrections.empty?
-
-        Offenses::Dependency.new(path, name, corrections.first(5))
-      end
-
       # Lol wut, there has got to be a better way to do this
       def remotes
         sources = dsl.instance_variable_get(:@sources)
         rubygems =
           sources.instance_variable_get(:@rubygems_aggregate) ||
-          sources.instance_variable_get(:@global_rubygems_source)
+            sources.instance_variable_get(:@global_rubygems_source)
 
-        rubygems.remotes.map(&:to_s)
-      end
-
-      def remote_offense_for(uri)
-        corrections = Gemfilelint.remotes.correct(uri)
-        return if corrections.empty?
-
-        Offenses::Remote.new(path, uri, corrections)
+        rubygems ? rubygems.remotes.map(&:to_s) : []
       end
     end
 
@@ -125,22 +116,31 @@ module Gemfilelint
 
     def initialize(ignore: [], logger: nil)
       @ignore = ignore
-      @logger = logger || make_logger
+      @logger =
+        logger ||
+          Logger
+            .new($stdout)
+            .tap do |creating|
+              creating.level = :info
+              creating.formatter = ->(*, message) { message }
+            end
     end
 
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def lint(*paths)
-      logger.info("Inspecting gemfiles at #{paths.join(', ')}\n")
+      logger.info("Inspecting gemfiles at #{paths.join(", ")}\n")
 
       offenses = []
-
-      each_offense_for(paths) do |offense|
-        if offense
-          offenses << offense
-          logger.info("W".colorize(:magenta))
-        else
-          logger.info(".".colorize(:green))
-        end
+      paths.each do |path|
+        Parser
+          .for(path)
+          .each_offense(ignore: ignore) do |offense|
+            if offense
+              offenses << offense
+              logger.info("W".colorize(:magenta))
+            else
+              logger.info(".".colorize(:green))
+            end
+          end
       end
 
       logger.info("\n")
@@ -148,32 +148,15 @@ module Gemfilelint
       if offenses.empty?
         true
       else
-        messages = offenses.map { |offense| offense_to_message(offense) }
+        messages =
+          offenses.map do |offense|
+            "#{offense.path.colorize(:cyan)}: " \
+              "#{"W".colorize(:magenta)}: #{offense}"
+          end
+
         logger.info("\nOffenses:\n\n#{messages.join("\n")}\n")
         false
       end
-    end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
-
-    private
-
-    def each_offense_for(paths)
-      paths.each do |path|
-        Parser.for(path).each_offense(ignore: ignore) do |offense|
-          yield offense
-        end
-      end
-    end
-
-    def make_logger
-      Logger.new($stdout).tap do |creating|
-        creating.level = :info
-        creating.formatter = ->(*, message) { message }
-      end
-    end
-
-    def offense_to_message(offense)
-      "#{offense.path.colorize(:cyan)}: #{'W'.colorize(:magenta)}: #{offense}"
     end
   end
 
