@@ -1,7 +1,7 @@
 # Gemfile lint
 
 [![Build Status](https://github.com/kddnewton/gemfilelint/workflows/Main/badge.svg)](https://github.com/kddnewton/gemfilelint/actions)
-[![Gem Version](https://img.shields.io/gem/v/gemfilelint.svg)](https://github.com/kddnewton/gemfilelint)
+[![Gem Version](https://img.shields.io/gem/v/gemfilelint.svg)](https://rubygems.org/gems/gemfilelint)
 
 Lint your Gemfile! This will find common spelling mistakes in gems and remote sources so that you don't accidentally download code from places that you don't mean to. For example, if you have a Gemfile with the contents:
 
