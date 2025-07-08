@@ -126,7 +126,7 @@ module Gemfilelint
             end
     end
 
-    def lint(*paths)
+    def lint(*paths) # rubocop:disable Naming/PredicateMethod
       logger.info("Inspecting gemfiles at #{paths.join(", ")}\n")
 
       offenses = []
