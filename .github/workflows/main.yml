@@ -27,6 +27,8 @@ jobs:
       fail-fast: false
     steps:
     - uses: actions/checkout@master
+    - if: matrix.ruby == 'head'
+      run: rm Gemfile.lock
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
