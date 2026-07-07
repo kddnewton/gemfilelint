@@ -6,7 +6,6 @@ on:
 
 jobs:
   format:
-    name: Format
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -22,7 +21,6 @@ jobs:
       min_version: 3.3
   test:
     needs: versions
-    name: Test ${{ matrix.ruby }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
