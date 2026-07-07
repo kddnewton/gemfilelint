@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-07-07
+
+### Added
+
+- Support for Bundler 4.
+
 ## [0.4.1] - 2021-11-17
 
 ### Changed
@@ -48,7 +54,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - 🎉 Initial release.
 
-[unreleased]: https://github.com/kddnewton/gemfilelint/compare/v0.4.1...HEAD
+[unreleased]: https://github.com/kddnewton/gemfilelint/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/kddnewton/gemfilelint/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/kddnewton/gemfilelint/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/kddnewton/gemfilelint/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kddnewton/gemfilelint/compare/v0.2.2...v0.3.0

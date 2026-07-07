@@ -2,7 +2,8 @@
 
 require "logger"
 require "bundler"
-require "bundler/similarity_detector"
+
+require "gemfilelint/similarity_detector"
 require "gemfilelint/version"
 
 module Gemfilelint
@@ -10,7 +11,7 @@ module Gemfilelint
     attr_reader :detector, :haystack
 
     def initialize(haystack)
-      @detector = Bundler::SimilarityDetector.new(haystack)
+      @detector = SimilarityDetector.new(haystack)
       @haystack = haystack
     end
 
